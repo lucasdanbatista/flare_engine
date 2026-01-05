@@ -20,7 +20,7 @@ class Pipe extends StatefulWidget {
 
 class _PipeState extends State<Pipe> {
   final _initialPositionX = 600.0;
-  var _initialPositionY = math.min(math.Random().nextInt(300), 75).toDouble();
+  var _initialPositionY = math.min(math.Random().nextInt(200), 75).toDouble();
 
   // Starting position (off-screen right)
   late var _positionX = _initialPositionX;
@@ -30,7 +30,7 @@ class _PipeState extends State<Pipe> {
 
   void reset() {
     _positionX = _initialPositionX;
-    _initialPositionY = math.min(math.Random().nextInt(300), 75).toDouble();
+    _initialPositionY = math.min(math.Random().nextInt(200), 75).toDouble();
   }
 
   @override
