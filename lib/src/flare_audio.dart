@@ -25,15 +25,37 @@ class FlareAudio {
   /// ```dart
   /// FlareAudio().playSfx('audio/jump.wav');
   /// ```
+  final Map<String, AudioPlayer> _activePlayers = {};
+
+  /// Plays a sound effect from the given asset [path].
+  ///
+  /// Example:
+  /// ```dart
+  /// FlareAudio().playSfx('audio/jump.wav');
+  /// ```
   Future<void> playSfx(String path) async {
+    if (_activePlayers.containsKey(path)) {
+      return;
+    }
+
     final player = _playerFactory();
+    _activePlayers[path] = player;
+
     // Ensure we release resources after playing
     await player.setReleaseMode(ReleaseMode.release);
-    await player.play(AssetSource(path));
 
-    // Dispose the player when finished to free up resources
-    player.onPlayerComplete.listen((_) {
+    try {
+      await player.play(AssetSource(path));
+
+      // Dispose the player when finished to free up resources
+      player.onPlayerComplete.listen((_) {
+        _activePlayers.remove(path);
+        player.dispose();
+      });
+    } catch (e) {
+      _activePlayers.remove(path);
       player.dispose();
-    });
+      rethrow;
+    }
   }
 }
