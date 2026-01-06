@@ -18,8 +18,16 @@ class PipeLevelGenerator implements LevelGenerator {
 
   final initialPositionX = 600.0;
 
+  late var _previousLevelFactor = levelFactor;
+
+  var _speed = 200.0;
+
   double get speed {
-    return max(400, 200 * (levelFactor * 0.5));
+    if (_previousLevelFactor != levelFactor) {
+      _previousLevelFactor = levelFactor;
+      _speed += 10;
+    }
+    return min(_speed, 1000);
   }
 
   double _generatePositionY() => max(150, Random().nextInt(300).toDouble());
