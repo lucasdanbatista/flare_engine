@@ -20,7 +20,7 @@ class PipeLevelGenerator implements LevelGenerator {
 
   late var _previousLevelFactor = levelFactor;
 
-  var _speed = 200.0;
+  var _speed = 300.0;
 
   double get speed {
     if (_previousLevelFactor != levelFactor) {
@@ -31,6 +31,7 @@ class PipeLevelGenerator implements LevelGenerator {
   }
 
   double _generatePositionY() => max(150, Random().nextInt(300).toDouble());
+
 
   @override
   void reset() {
