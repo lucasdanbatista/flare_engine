@@ -42,7 +42,7 @@ class FlareAudio {
     _activePlayers[path] = player;
 
     // Ensure we release resources after playing
-    await player.setReleaseMode(ReleaseMode.release);
+    await player.setReleaseMode(ReleaseMode.stop);
 
     try {
       await player.play(AssetSource(path));
