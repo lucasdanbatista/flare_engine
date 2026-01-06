@@ -1,4 +1,5 @@
 import 'package:example/background.dart';
+import 'package:example/debug_info.dart';
 import 'package:example/game_assets.dart';
 import 'package:example/menu.dart';
 import 'package:example/pipe.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'grass.dart';
+import 'level.dart';
 
 void main() => runApp(const MainApp());
 
@@ -17,6 +19,10 @@ var score = 0;
 enum GameState { idle, running, over }
 
 var gameState = GameState.idle;
+
+const double initialPipeLevelFactor = 3;
+
+final pipeLevel = PipeLevelGenerator(initialPipeLevelFactor);
 
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
@@ -43,13 +49,18 @@ class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
     engine.run(
       onTick: (delta) {
         frameNotifier.tick(delta);
-        if (gameState == GameState.idle) {
-          score = 0;
-        } else if (gameState == GameState.over) {
-          if (!didPlayHit) {
-            didPlayHit = true;
-            FlareAudio().playSfx('audio/hit.wav');
-          }
+        switch (gameState) {
+          case GameState.idle:
+            score = 0;
+            break;
+          case GameState.running:
+            break;
+          case GameState.over:
+            if (!didPlayHit) {
+              didPlayHit = true;
+              FlareAudio().playSfx('audio/hit.wav');
+            }
+            break;
         }
       },
     );
@@ -87,6 +98,7 @@ class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
               Player.fly(_playerKey);
               break;
             case GameState.over:
+              pipeLevel.levelFactor = initialPipeLevelFactor;
               didPlayHit = false;
               score = 0;
               Player.reset(_playerKey);
@@ -132,6 +144,12 @@ class _MainAppState extends State<MainApp> with SingleTickerProviderStateMixin {
                     child: Grass(),
                   ),
                   Menu(),
+                  SafeArea(
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: DebugInfo(),
+                    ),
+                  ),
                 ],
               ),
             ),

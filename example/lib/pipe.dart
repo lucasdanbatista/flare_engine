@@ -19,41 +19,34 @@ class Pipe extends StatefulWidget {
 }
 
 class _PipeState extends State<Pipe> {
-  final _initialPositionX = 600.0;
-  var _initialPositionY = math.min(math.Random().nextInt(200), 75).toDouble();
-
   // Starting position (off-screen right)
-  late var _positionX = _initialPositionX;
-
-  // Horizontal speed (pixels/s)
-  final _speed = 200.0;
+  late var _positionX = pipeLevel.initialPositionX;
 
   void reset() {
-    _positionX = _initialPositionX;
-    _initialPositionY = math.min(math.Random().nextInt(200), 75).toDouble();
+    pipeLevel.reset();
+    _positionX = pipeLevel.initialPositionX;
   }
 
   @override
   Widget build(BuildContext context) {
     if (gameState == GameState.running) {
-      // Move pipe to the left
-      _positionX -= _speed * context.delta;
-
-      if (_positionX.round() == 100) {
+      _positionX -= pipeLevel.speed * context.delta;
+      if (_positionX < -60) {
         if (widget.direction == AxisDirection.up) {
           score++;
+          pipeLevel.levelFactor -= 0.05;
           FlareAudio().playSfx('audio/point.wav');
         }
-      }
-
-      // Reset position when pipe goes off-screen left
-      if (_positionX < -100) {
         reset();
       }
     }
     return Positioned(
-      top: widget.direction == AxisDirection.up ? -_initialPositionY : null,
-      bottom: widget.direction == AxisDirection.up ? null : -_initialPositionY,
+      top: widget.direction == AxisDirection.up
+          ? -pipeLevel.initialPositionY
+          : null,
+      bottom: widget.direction == AxisDirection.up
+          ? null
+          : -pipeLevel.initialPositionY + 112,
       left: _positionX,
       child: Transform.rotate(
         angle: widget.direction == AxisDirection.up ? -math.pi : 0,
